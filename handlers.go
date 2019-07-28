@@ -25,5 +25,10 @@ func ShowTicker0(w http.ResponseWriter, r *http.Request) {
 		VWAP:   BranePriceIndex(market),
 	}
 
-	json.NewEncoder(w).Encode(price)
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+
+	if err := json.NewEncoder(w).Encode(price); err != nil {
+		panic(err)
+	}
 }
