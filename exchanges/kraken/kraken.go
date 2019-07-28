@@ -1,6 +1,7 @@
 package kraken
 
 import (
+	"branehub/marketObservables"
 	"bytes"
 	"crypto/hmac"
 	"crypto/sha512"
@@ -16,21 +17,19 @@ import (
 const krakenUrl string = "https://api.kraken.com"
 const krakenVersion uint8 = 0
 
-func (r rawTicker) ticker() Ticker {
+func (r rawTicker) ticker() marketObservables.Ticker {
 	a, _ := strconv.ParseFloat(r.Ask[0], 32)
 	b, _ := strconv.ParseFloat(r.Bid[0], 32)
 	c, _ := strconv.ParseFloat(r.Last[0], 32)
 	v, _ := strconv.ParseFloat(r.Volume[1], 32)
-	p, _ := strconv.ParseFloat(r.VWA[1], 32)
 	l, _ := strconv.ParseFloat(r.Low[1], 32)
 	h, _ := strconv.ParseFloat(r.High[1], 32)
 
-	t := Ticker{
-		Ask:    float32(a),
-		Bid:    float32(b),
+	t := marketObservables.Ticker{
 		Last:   float32(c),
+		Bid:    float32(b),
+		Ask:    float32(a),
 		Volume: float32(v),
-		VWA:    float32(p),
 		Low:    float32(l),
 		High:   float32(h),
 	}
@@ -151,12 +150,24 @@ func (b Kraken) requester(call string, query string, params map[string]string) (
 	return result, err
 }
 
+//Remove "BTC" and replace with "XBT"
+func btc2xbt(input []rune) string {
+	btc, xbt := []rune("BTC"), []rune("XBT")
+	for i, _ := range input {
+		if input[i] == btc[0] && input[i+1] == btc[1] && input[i+2] == btc[2] {
+			input[i], input[i+1], input[i+2] = xbt[0], xbt[1], xbt[2]
+		}
+	}
+	return string(input)
+}
+
 //Public API
 
 //Get market ticker
-func (b Kraken) GetTicker(market string) (Ticker, error) {
+func (b Kraken) GetTicker(market string) (marketObservables.Ticker, error) {
 
 	call := "public/Ticker"
+	market = btc2xbt([]rune(market))
 	query := "pair=" + market
 
 	// Removed multi market ticker

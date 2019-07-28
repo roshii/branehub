@@ -10,20 +10,35 @@ import (
 
 var market string = "BTCEUR"
 
+// vwap calculates the volume-weighted average price
+// formula: sum(num shares * share price)/(total shares)
+// input: [[volume, price], ...]
+func vwap(positions ...[2]float32) float32 {
+	var sum, total float32
+	for _, x := range positions {
+		sum += x[0] * x[1]
+		total += x[0]
+	}
+
+	return sum / total
+}
+
 func main() {
-	market := "BTCEUR"
 	fmt.Println("*** BraneHub ***")
-	ex1 := bl3p.NewBl3p("", "")
-	r1, _ := ex1.GetTicker(market)
 
-	fmt.Println("@BL3P Last: ", r1.Last)
+	market := "BTCEUR"
 
-	market = "XBTEUR"
-	ex2 := kraken.NewKraken("", "")
-	r2, _ := ex2.GetTicker(market)
+	bl3p := bl3p.NewBl3p("", "")
+	ticker, _ := bl3p.GetTicker(market)
+	bl3pTick := [2]float32{ticker.Volume, ticker.Last}
+	fmt.Println("@BL3P Last: ", bl3pTick[1])
 
-	fmt.Println("@Kraken Last: ", r2.Last)
+	kraken := kraken.NewKraken("", "")
+	ticker, _ = kraken.GetTicker(market)
+	krakenTick := [2]float32{ticker.Volume, ticker.Last}
+	fmt.Println("@Kraken Last: ", krakenTick[1])
 
-	average := (r1.Last + r2.Last) / 2
+	average := vwap(bl3pTick, krakenTick)
 	fmt.Println("BTC/EUR Average: ", average)
+
 }

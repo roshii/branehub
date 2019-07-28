@@ -119,7 +119,7 @@ type Info struct {
 }
 
 //Ticker | Ticker call struct
-type Ticker struct {
+type rawTicker struct {
 	Currency  string  `json:"currency"`
 	Last      float32 `json:"last"`
 	Bid       float32 `json:"bid"`

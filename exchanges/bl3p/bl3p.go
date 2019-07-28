@@ -1,6 +1,7 @@
 package bl3p
 
 import (
+	"branehub/marketObservables"
 	"bytes"
 	"crypto/hmac"
 	"crypto/sha512"
@@ -129,10 +130,10 @@ func (b Bl3p) requester(call string, params map[string]string) (Result, error) {
 }
 
 //requester | Creates the request to Bl3p API
-func (b Bl3p) tickerRequester(call string, params map[string]string) (Ticker, error) {
+func (b Bl3p) tickerRequester(call string, params map[string]string) (rawTicker, error) {
 
 	//create empty bl3presult
-	result := Ticker{}
+	result := rawTicker{}
 
 	//build url
 	u, err := url.ParseRequestURI(b.url)
@@ -191,16 +192,28 @@ func (b Bl3p) tickerRequester(call string, params map[string]string) (Ticker, er
 	return result, err
 }
 
+func (r rawTicker) ticker() marketObservables.Ticker {
+	t := marketObservables.Ticker{
+		Ask:    r.Ask,
+		Bid:    r.Bid,
+		Last:   r.Last,
+		Volume: r.Volume.Daily,
+		Low:    r.Low,
+		High:   r.High,
+	}
+	return t
+}
+
 //Public API
 
 //Get market ticker
-func (b Bl3p) GetTicker(market string) (Ticker, error) {
+func (b Bl3p) GetTicker(market string) (marketObservables.Ticker, error) {
 
 	call := market + "/ticker"
 
 	result, err := b.tickerRequester(call, nil)
 
-	return result, err
+	return result.ticker(), err
 }
 
 //Retrieve the orderbook

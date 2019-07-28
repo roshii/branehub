@@ -21,13 +21,13 @@ type rawTicker struct {
 }
 
 type Ticker struct {
-	Ask    float32 `json:"a"`
-	Bid    float32 `json:"b"`
-	Last   float32 `json:"c"`
-	Volume float32 `json:"v"`
-	VWA    float32 `json:"p"`
-	Low    float32 `json:"l"`
-	High   float32 `json:"h"`
+	Ask    float32
+	Bid    float32
+	Last   float32
+	Volume float32
+	VWA    float32
+	Low    float32
+	High   float32
 }
 
 //Kraken struct
