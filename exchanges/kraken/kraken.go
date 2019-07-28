@@ -1,7 +1,6 @@
 package kraken
 
 import (
-	"branehub/marketObservables"
 	"bytes"
 	"crypto/hmac"
 	"crypto/sha512"
@@ -12,6 +11,8 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+
+	"gitlab.com/braneproject/branehub/marketObservables"
 )
 
 const krakenUrl string = "https://api.kraken.com"

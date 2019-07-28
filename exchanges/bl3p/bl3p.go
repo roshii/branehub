@@ -1,7 +1,6 @@
 package bl3p
 
 import (
-	"branehub/marketObservables"
 	"bytes"
 	"crypto/hmac"
 	"crypto/sha512"
@@ -12,6 +11,8 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+
+	"gitlab.com/braneproject/branehub/marketObservables"
 )
 
 const bl3pUrl string = "https://api.bl3p.eu"
