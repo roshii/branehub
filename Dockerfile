@@ -16,7 +16,7 @@ RUN apk add --no-cache --update git \
 # Start a new, final image to reduce size.
 FROM alpine as final
 
-# Expose lnd ports (server, rpc).
+# Expose http port
 EXPOSE 80
 
 # Copy the binaries and entrypoint from the builder image.
