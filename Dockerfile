@@ -26,6 +26,5 @@ COPY --from=builder /go/bin/branehub /bin/
 RUN apk add --no-cache \
     bash
 
-# Copy the entrypoint script.
-COPY "start-branehub.sh" .
-RUN chmod +x start-branehub.sh
+COPY docker-entrypoint.sh /usr/local/bin/
+ENTRYPOINT ["docker-entrypoint.sh"]
