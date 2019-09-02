@@ -15,13 +15,13 @@ import (
 	"gitlab.com/braneproject/branehub/marketObservables"
 )
 
-const bl3pUrl string = "https://api.bl3p.eu"
+const bl3pURL string = "https://api.bl3p.eu"
 const bl3pVersion uint8 = 1
 
 //NewBl3p | Returns new Bl3p struct
 func NewBl3p(apiPubkey string, apiPrivkey string) *Bl3p {
 	a := Bl3p{
-		url:     bl3pUrl,
+		url:     bl3pURL,
 		version: bl3pVersion,
 		pubkey:  apiPubkey,
 		privkey: apiPrivkey,

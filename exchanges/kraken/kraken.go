@@ -15,7 +15,7 @@ import (
 	"gitlab.com/braneproject/branehub/marketObservables"
 )
 
-const krakenUrl string = "https://api.kraken.com"
+const krakenURL string = "https://api.kraken.com"
 const krakenVersion uint8 = 0
 
 func (r rawTicker) ticker() marketObservables.Ticker {
@@ -40,7 +40,7 @@ func (r rawTicker) ticker() marketObservables.Ticker {
 //NewKraken | Returns new Kraken struct
 func NewKraken(apiPubkey string, apiPrivkey string) *Kraken {
 	a := Kraken{
-		url:     krakenUrl,
+		url:     krakenURL,
 		version: krakenVersion,
 		pubkey:  apiPubkey,
 		privkey: apiPrivkey,
@@ -154,7 +154,7 @@ func (b Kraken) requester(call string, query string, params map[string]string) (
 //Remove "BTC" and replace with "XBT"
 func btc2xbt(input []rune) string {
 	btc, xbt := []rune("BTC"), []rune("XBT")
-	for i, _ := range input {
+	for i := 0; i < (len(input) - 2); i++ {
 		if input[i] == btc[0] && input[i+1] == btc[1] && input[i+2] == btc[2] {
 			input[i], input[i+1], input[i+2] = xbt[0], xbt[1], xbt[2]
 		}
