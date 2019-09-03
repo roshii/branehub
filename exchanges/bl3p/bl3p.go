@@ -176,7 +176,9 @@ func (b Bl3p) tickerRequester(call string, params map[string]string) (rawTicker,
 
 	//error handling
 	if res.StatusCode != 200 {
-		return result, fmt.Errorf("request didn't return a HTTP Status 200 but HTTP Status: %v", res.StatusCode)
+		err = fmt.Errorf("request didn't return a HTTP Status 200 but HTTP Status: %v", res.StatusCode)
+		fmt.Println(err)
+		return result, err
 	}
 
 	//read request body
@@ -213,6 +215,11 @@ func (b Bl3p) GetTicker(market string) (marketObservables.Ticker, error) {
 	call := market + "/ticker"
 
 	result, err := b.tickerRequester(call, nil)
+
+	if err != nil {
+		fmt.Println(err)
+		return marketObservables.Ticker{}, err
+	}
 
 	return result.ticker(), err
 }
