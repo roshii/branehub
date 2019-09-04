@@ -10,11 +10,12 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 
 	"gitlab.com/braneproject/branehub/marketObservables"
 )
 
-const bitstampURL string = "https://www.bitstamp.net/api/v2"
+const bitstampURL string = "https://www.bitstamp.net"
 
 //NewBitstamp | Returns new Bitstamp struct
 func NewBitstamp(apiPubkey string, apiPrivkey string) *Bitstamp {
@@ -49,6 +50,8 @@ func (b Bitstamp) requester(call string, params map[string]string) ([]byte, erro
 			data.Set(k, p)
 		}
 	}
+
+	fmt.Println(apiCallURL)
 
 	//create request
 	client := &http.Client{}
@@ -105,31 +108,40 @@ func (b Bitstamp) requester(call string, params map[string]string) ([]byte, erro
 }
 
 func (r rawTicker) ticker() marketObservables.Ticker {
+	a, _ := strconv.ParseFloat(r.Ask, 32)
+	b, _ := strconv.ParseFloat(r.Bid, 32)
+	c, _ := strconv.ParseFloat(r.Last, 32)
+	v, _ := strconv.ParseFloat(r.Volume, 32)
+	l, _ := strconv.ParseFloat(r.Low, 32)
+	h, _ := strconv.ParseFloat(r.High, 32)
+
 	t := marketObservables.Ticker{
-		Ask:    r.Ask,
-		Bid:    r.Bid,
-		Last:   r.Last,
-		Volume: r.Volume,
-		Low:    r.Low,
-		High:   r.High,
+		Last:   float32(c),
+		Bid:    float32(b),
+		Ask:    float32(a),
+		Volume: float32(v),
+		Low:    float32(l),
+		High:   float32(h),
 	}
+
 	return t
 }
 
 //GetTicker returns a standard Ticker for `market`
 func (b Bitstamp) GetTicker(market string) (marketObservables.Ticker, error) {
 
-	call := market + "/ticker"
+	call := "api/v2/ticker/" + market
 
 	contents, err := b.requester(call, nil)
 
-	rawTicker := rawTicker{}
+	raw := rawTicker{}
 
 	if err == nil {
-		err = json.Unmarshal(contents, &rawTicker)
+		err = json.Unmarshal(contents, &raw)
+		if err != nil {
+			return marketObservables.Ticker{}, err
+		}
 	}
 
-	result := rawTicker.ticker()
-
-	return result, err
+	return raw.ticker(), err
 }

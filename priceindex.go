@@ -44,7 +44,7 @@ func BranePriceIndex(market string) float32 {
 	bitstamp := bitstamp.NewBitstamp("", "")
 	ticker, _ = bitstamp.GetTicker(market)
 	bitstampTick := [2]float32{ticker.Volume, ticker.Last}
-	// fmt.Println("@Kraken Last: ", krakenTick[1])
+	// fmt.Println("@Bitstamp Last: ", bitstampTick[1])
 
 	average := vwap(bl3pTick, krakenTick, bitstampTick)
 	// fmt.Println("BTC/EUR Average: ", average)
