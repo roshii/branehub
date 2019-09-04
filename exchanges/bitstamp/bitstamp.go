@@ -51,8 +51,6 @@ func (b Bitstamp) requester(call string, params map[string]string) ([]byte, erro
 		}
 	}
 
-	fmt.Println(apiCallURL)
-
 	//create request
 	client := &http.Client{}
 	r, err := http.NewRequest("GET", apiCallURL, bytes.NewBufferString(data.Encode()))
