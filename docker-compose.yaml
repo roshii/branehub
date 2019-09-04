@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  branehub:
+    container_name: branehub
+    image: r0shii/branehub:latest
+    hostname: api
+    domainname: brane.cc
+    mac_address: 46:05:c5:c3:77:6f
+    cap_add:
+      - NET_ADMIN
+    networks:
+      macvlan:
+        ipv4_address: 192.168.149.129
+    dns:
+      - 127.0.0.1
+      - 185.121.177.177
+    ports:
+      - 80/tcp
+    environment:
+      ServerIP: 192.168.149.129
+      VIRTUAL_HOST: api.brane.cc
+      WEBPASSWORD: ""
+    restart: unless-stopped
+
+networks:
+  macvlan:
+    driver: macvlan
+    driver_opts:
+      parent: ovs_bond0
+    ipam:
+      config:
+        - subnet: 192.168.149.0/24
