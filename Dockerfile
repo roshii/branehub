@@ -1,4 +1,4 @@
-FROM golang:1.12-alpine as builder
+FROM golang:alpine as build
 
 # Copy in the local repository to build from.
 COPY / /go/src/gitlab.com/braneproject/branehub/
@@ -8,7 +8,7 @@ COPY / /go/src/gitlab.com/braneproject/branehub/
 ENV GODEBUG netdns=cgo
 
 # Install dependencies and install/build branehub.
-RUN apk add --no-cache --update git \
+RUN apk add --no-cache --update git ca-certificates \
 &&  go get github.com/gorilla/mux \
 &&  go install /go/src/gitlab.com/braneproject/branehub
 
@@ -18,7 +18,8 @@ FROM alpine as final
 # Expose http port
 EXPOSE 80
 
-# Copy the binaries and entrypoint from the builder image.
-COPY --from=builder /go/bin/branehub /bin/
+# Copy the binaries and TLS certificates from the build image.
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=build /go/bin/branehub /bin/
 
 ENTRYPOINT ["branehub"]
