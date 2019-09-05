@@ -27,10 +27,6 @@ func vwap(positions ...[2]float32) float32 {
 // BranePriceIndex returns the volume weighted average for `market`
 func BranePriceIndex(market string) float32 {
 
-	if market != "BTCEUR" {
-		return 0
-	}
-
 	bl3p := bl3p.NewBl3p("", "")
 	ticker, _ := bl3p.GetTicker(market)
 	bl3pTick := [2]float32{ticker.Volume, ticker.Last}
@@ -47,7 +43,7 @@ func BranePriceIndex(market string) float32 {
 	// fmt.Println("@Bitstamp Last: ", bitstampTick[1])
 
 	average := vwap(bl3pTick, krakenTick, bitstampTick)
-	// fmt.Println("BTC/EUR Average: ", average)
+	// fmt.Println("Average: ", average)
 
 	return average
 
