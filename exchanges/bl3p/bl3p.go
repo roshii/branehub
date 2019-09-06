@@ -2,9 +2,6 @@ package bl3p
 
 import (
 	"bytes"
-	"crypto/hmac"
-	"crypto/sha512"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -69,32 +66,6 @@ func (b Bl3p) requester(call string, params map[string]string) (Result, error) {
 	if err != nil {
 		return result, err
 	}
-
-	//request body
-	body := []byte(call + string(0) + data.Encode())
-
-	//decode privkey
-	base64Decode := make([]byte, base64.StdEncoding.DecodedLen(len(b.privkey)))
-	l, err := base64.StdEncoding.Decode(base64Decode, []byte(b.privkey))
-
-	//error handling
-	if err != nil {
-		return result, err
-	}
-
-	decodedPrivkey := []byte(base64Decode[:l])
-
-	//sign
-	h := hmac.New(sha512.New, decodedPrivkey)
-	h.Write(body)
-	sign := h.Sum(nil)
-
-	//encode signature
-	encodedSign := string(base64.StdEncoding.EncodeToString([]byte(sign)))
-
-	//add headers for authentication
-	r.Header.Add("Rest-Key", b.pubkey)
-	r.Header.Add("Rest-Sign", encodedSign)
 
 	//do request
 	res, err := client.Do(r)
@@ -209,7 +180,7 @@ func (r rawTicker) ticker() marketObservables.Ticker {
 
 //Public API
 
-//Get market ticker
+//GetTicker ...
 func (b Bl3p) GetTicker(market string) (marketObservables.Ticker, error) {
 
 	call := market + "/ticker"
@@ -224,7 +195,16 @@ func (b Bl3p) GetTicker(market string) (marketObservables.Ticker, error) {
 	return result.ticker(), err
 }
 
-//Retrieve the orderbook
+//ChannelTicker returns a standard Ticker to a channel
+func (b Bl3p) ChannelTicker(market string, c chan marketObservables.Ticker) {
+	ticker, err := b.GetTicker(market)
+	if err == nil {
+		c <- ticker
+	}
+	close(c)
+}
+
+//GetOrderbook ...
 func (b Bl3p) GetOrderbook(market string) (Orderbook, error) {
 
 	call := market + "/orderbook"
