@@ -2,9 +2,6 @@ package kraken
 
 import (
 	"bytes"
-	"crypto/hmac"
-	"crypto/sha512"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -54,20 +51,20 @@ func (e Error) Error() string {
 }
 
 //requester | Creates the request to Kraken API
-func (b Kraken) requester(call string, query string, params map[string]string) (Result, error) {
+func (k Kraken) requester(call string, query string, params map[string]string) (Result, error) {
 
 	//create empty Result
 	result := Result{}
 
 	//build url
-	u, err := url.ParseRequestURI(b.url)
+	u, err := url.ParseRequestURI(k.url)
 
 	//error handling
 	if err != nil {
 		return result, err
 	}
 
-	u.Path = "/" + fmt.Sprintf("%v", b.version) + "/" + call
+	u.Path = "/" + fmt.Sprintf("%v", k.version) + "/" + call
 	u.RawQuery = query
 
 	apiCallURL := fmt.Sprintf("%v", u)
@@ -90,32 +87,6 @@ func (b Kraken) requester(call string, query string, params map[string]string) (
 	if err != nil {
 		return result, err
 	}
-
-	//request body
-	body := []byte(call + string(0) + data.Encode())
-
-	//decode privkey
-	base64Decode := make([]byte, base64.StdEncoding.DecodedLen(len(b.privkey)))
-	l, err := base64.StdEncoding.Decode(base64Decode, []byte(b.privkey))
-
-	//error handling
-	if err != nil {
-		return result, err
-	}
-
-	decodedPrivkey := []byte(base64Decode[:l])
-
-	//sign
-	h := hmac.New(sha512.New, decodedPrivkey)
-	h.Write(body)
-	sign := h.Sum(nil)
-
-	//encode signature
-	encodedSign := string(base64.StdEncoding.EncodeToString([]byte(sign)))
-
-	//add headers for authentication
-	r.Header.Add("Rest-Key", b.pubkey)
-	r.Header.Add("Rest-Sign", encodedSign)
 
 	//do request
 	res, err := client.Do(r)
@@ -164,8 +135,8 @@ func btc2xbt(input []rune) string {
 
 //Public API
 
-//Get market ticker
-func (b Kraken) GetTicker(market string) (marketObservables.Ticker, error) {
+//GetTicker ...
+func (k Kraken) GetTicker(market string) (marketObservables.Ticker, error) {
 
 	call := "public/Ticker"
 	market = btc2xbt([]rune(market))
@@ -181,7 +152,7 @@ func (b Kraken) GetTicker(market string) (marketObservables.Ticker, error) {
 	// 	}
 	// }
 
-	ticker, err := b.requester(call, query, nil)
+	ticker, err := k.requester(call, query, nil)
 
 	rawResult := rawTicker{}
 
@@ -194,4 +165,13 @@ func (b Kraken) GetTicker(market string) (marketObservables.Ticker, error) {
 	result := rawResult.ticker()
 
 	return result, err
+}
+
+//ChannelTicker returns a standard Ticker to a channel
+func (k Kraken) ChannelTicker(market string, c chan marketObservables.Ticker) {
+	ticker, err := k.GetTicker(market)
+	if err == nil {
+		c <- ticker
+	}
+	close(c)
 }
