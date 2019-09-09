@@ -27,7 +27,7 @@ func ShowTicker0(w http.ResponseWriter, r *http.Request) {
 		if v.market == market {
 			ref = i
 			fmt.Println("ref updated")
-			if v.last+10 > time.Now().Unix() {
+			if v.last+1 > time.Now().Unix() {
 				old = false
 			}
 		}
