@@ -6,8 +6,8 @@ import (
 )
 
 func TestBtc2xbt(t *testing.T) {
-	tests := [4]string{"ABCBTC", "BTCUHG", "BTCBTCBC", "AABTCZZ"}
-	results := [4]string{"ABCXBT", "XBTUHG", "XBTXBTBC", "AAXBTZZ"}
+	tests := [4]string{"abcbtc", "btcuhg", "btcbtcbc", "aabtczz"}
+	results := [4]string{"abcxbt", "xbtuhg", "xbtxbtbc", "aaxbtzz"}
 	var result string
 	for i, v := range tests {
 		result = btc2xbt([]rune(v))
