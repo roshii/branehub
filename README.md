@@ -45,15 +45,19 @@ Market that the call will be applied to.
 
 Passing any GET parameters, will result in your request being rejected.
 
-Request | |
-------------
-GET | https://api.brane.cc/0/ticker/{currency_pair}
- | Supported values for currency_pair: any six letter combination supported by one or several of connected exchanges.
 
-Response JSON |
-----------------
-market | Actual market
-vwap | Volume weighted average price of exchanges' last reported price
+#### Request
+
+| Type | URI | Definition |
+|--|--|--|
+| GET | https://api.brane.cc/0/ticker/{currency_pair} | Supported values for currency_pair: any six letter combination supported by one or several of connected exchanges. |
+
+#### Response JSON
+
+| Field | Definition |
+|-------|--------|
+| market | Actual market |
+| vwap | Volume weighted average price of exchanges' last reported price |
 
 #### Example
 
