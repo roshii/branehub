@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 
 	"gitlab.com/braneproject/branehub/marketObservables"
 )
@@ -183,7 +184,7 @@ func (r rawTicker) ticker() marketObservables.Ticker {
 //GetTicker ...
 func (b Bl3p) GetTicker(market string) (marketObservables.Ticker, error) {
 
-	call := market + "/ticker"
+	call := strings.ToUpper(market) + "/ticker"
 
 	result, err := b.tickerRequester(call, nil)
 

@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 
 	"gitlab.com/braneproject/branehub/marketObservables"
 )
@@ -124,7 +125,7 @@ func (k Kraken) requester(call string, query string, params map[string]string) (
 
 //Remove "BTC" and replace with "XBT"
 func btc2xbt(input []rune) string {
-	btc, xbt := []rune("BTC"), []rune("XBT")
+	btc, xbt := []rune("btc"), []rune("xbt")
 	for i := 0; i < (len(input) - 2); i++ {
 		if input[i] == btc[0] && input[i+1] == btc[1] && input[i+2] == btc[2] {
 			input[i], input[i+1], input[i+2] = xbt[0], xbt[1], xbt[2]
@@ -139,7 +140,7 @@ func btc2xbt(input []rune) string {
 func (k Kraken) GetTicker(market string) (marketObservables.Ticker, error) {
 
 	call := "public/Ticker"
-	market = btc2xbt([]rune(market))
+	market = btc2xbt([]rune(strings.ToLower(market)))
 	query := "pair=" + market
 
 	// Removed multi market ticker
