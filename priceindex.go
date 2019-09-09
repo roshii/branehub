@@ -34,7 +34,9 @@ func vwap(positions ...[2]float32) float32 {
 		sum += x[0] * x[1]
 		total += x[0]
 	}
-
+	if total == 0 {
+		return 0
+	}
 	return sum / total
 }
 
