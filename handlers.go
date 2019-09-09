@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -22,13 +23,13 @@ func TickerIndex0(w http.ResponseWriter, r *http.Request) {
 func ShowTicker0(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	market := vars["market"]
+	market = strings.ToUpper(market)
 
 	// Look for market in price list and tag if old
 	ref, old := -1, true
 	for i, v := range prices {
 		if v.market == market {
 			ref = i
-			fmt.Println("ref updated")
 			if v.last+2 > time.Now().Unix() {
 				old = false
 			}
