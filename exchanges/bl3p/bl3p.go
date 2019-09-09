@@ -198,6 +198,7 @@ func (b Bl3p) GetTicker(market string) (marketObservables.Ticker, error) {
 
 //ChannelTicker returns a standard Ticker to a channel
 func (b Bl3p) ChannelTicker(market string, c chan marketObservables.Ticker) {
+
 	ticker, err := b.GetTicker(market)
 	if err == nil {
 		c <- ticker
@@ -208,7 +209,7 @@ func (b Bl3p) ChannelTicker(market string, c chan marketObservables.Ticker) {
 //GetOrderbook ...
 func (b Bl3p) GetOrderbook(market string) (Orderbook, error) {
 
-	call := market + "/orderbook"
+	call := strings.ToUpper(market) + "/orderbook"
 
 	orderbook, err := b.requester(call, nil)
 
@@ -226,7 +227,7 @@ func (b Bl3p) GetLast1000Trades(market string, tradeID int) (Trades, error) {
 	var trades Result
 	var err error
 
-	call := market + "/trades"
+	call := strings.ToUpper(market) + "/trades"
 
 	if tradeID != 0 {
 		params := map[string]string{"trade_id": strconv.FormatInt(int64(tradeID), 10)}
@@ -246,120 +247,3 @@ func (b Bl3p) GetLast1000Trades(market string, tradeID int) (Trades, error) {
 
 //GetTradeHistory
 //TODO Implement GetTradeHistory
-
-//AddOrder | Add new order to the orderbook
-func (b Bl3p) AddOrder(orderType string, orderAmount int, orderPrice int) (interface{}, error) {
-
-	price := strconv.FormatInt(int64(orderPrice), 10)
-	amount := strconv.FormatInt(int64(orderAmount), 10)
-
-	params := map[string]string{"type": orderType, "amount_int": amount, "price_int": price, "fee_currency": "BTC"}
-
-	addOrder, err := b.requester("BTCEUR/money/order/add", params)
-
-	result := AddOrder{}
-
-	if err == nil {
-		err = json.Unmarshal(addOrder.Data, &result)
-	}
-
-	return result, err
-}
-
-//WalletHistory | Retrieve your account transaction history
-func (b Bl3p) WalletHistory(currency string) (Transactions, error) {
-
-	params := map[string]string{"currency": currency, "recs_per_page": "25"}
-
-	transactions, err := b.requester("GENMKT/money/wallet/history", params)
-
-	result := Transactions{}
-
-	if err == nil {
-		err = json.Unmarshal(transactions.Data, &result)
-	}
-
-	return result, err
-}
-
-//CancelOrder | Cancel an open order
-func (b Bl3p) CancelOrder(orderID int) (Result, error) {
-
-	params := map[string]string{"order_id": strconv.FormatInt(int64(orderID), 10)}
-
-	result, err := b.requester("BTCEUR/money/order/cancel", params)
-
-	return result, err
-}
-
-//OrderInfo | Retrieve information about an order
-func (b Bl3p) OrderInfo(orderID int) (Order, error) {
-
-	params := map[string]string{"order_id": strconv.FormatInt(int64(orderID), 10)}
-
-	order, err := b.requester("BTCEUR/money/order/result", params)
-
-	result := Order{}
-
-	if err == nil {
-		err = json.Unmarshal(order.Data, &result)
-	}
-
-	return result, err
-}
-
-//GetAllActiveOrders | Retrieve all your open orders
-func (b Bl3p) GetAllActiveOrders() (Orders, error) {
-
-	allActiveOrders, err := b.requester("BTCEUR/money/orders", nil)
-
-	result := Orders{}
-
-	if err == nil {
-		err = json.Unmarshal(allActiveOrders.Data, &result)
-	}
-
-	return result, err
-}
-
-//GetNewDepositAddress | Create a new bitcoin deposit address
-func (b Bl3p) GetNewDepositAddress() (DepositAddress, error) {
-
-	depositAddress, err := b.requester("BTCEUR/money/new_deposit_address", nil)
-
-	result := DepositAddress{}
-
-	if err == nil {
-		err = json.Unmarshal(depositAddress.Data, &result)
-	}
-
-	return result, err
-}
-
-//GetLastDepositAddress | Retrieve the last created bitcoin deposit address
-func (b Bl3p) GetLastDepositAddress() (DepositAddress, error) {
-
-	depositAddress, err := b.requester("BTCEUR/money/deposit_address", nil)
-
-	result := DepositAddress{}
-
-	if err == nil {
-		err = json.Unmarshal(depositAddress.Data, &result)
-	}
-
-	return result, err
-}
-
-//GetInfo | Get account info
-func (b Bl3p) GetInfo() (Info, error) {
-
-	info, err := b.requester("GENMKT/money/info", nil)
-
-	result := Info{}
-
-	if err == nil {
-		err = json.Unmarshal(info.Data, &result)
-	}
-
-	return result, err
-}
