@@ -11,10 +11,12 @@ import (
 
 func Index(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome to Brane's Hub!")
+	fmt.Fprintf(w, "Please refer to https://gitlab.com/braneproject/branehub/blob/master/README.md")
 }
 
 func TickerIndex0(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "This is the Ticker v0 endpoint")
+	fmt.Fprintf(w, "Please refer to https://gitlab.com/braneproject/branehub/blob/master/README.md")
 }
 
 func ShowTicker0(w http.ResponseWriter, r *http.Request) {
