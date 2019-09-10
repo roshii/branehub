@@ -56,7 +56,7 @@ func (b Bitstamp) requester(call string, params map[string]string) ([]byte, erro
 		return []byte{}, err
 	}
 	if res.StatusCode != 200 {
-		return []byte{}, fmt.Errorf("Request did return a HTTP status %v", res.StatusCode)
+		return []byte{}, fmt.Errorf("%s returned HTTP Status: %v", apiCallURL, res.StatusCode)
 	}
 
 	return ioutil.ReadAll(res.Body)

@@ -78,7 +78,7 @@ func (b Bl3p) requester(call string, params map[string]string) (Result, error) {
 
 	//error handling
 	if res.StatusCode != 200 {
-		return result, fmt.Errorf("request didn't return a HTTP Status 200 but HTTP Status: %v", res.StatusCode)
+		return result, fmt.Errorf("%s returned HTTP Status: %v", apiCallURL, res.StatusCode)
 	}
 
 	//read request body
@@ -148,9 +148,7 @@ func (b Bl3p) tickerRequester(call string, params map[string]string) (rawTicker,
 
 	//error handling
 	if res.StatusCode != 200 {
-		err = fmt.Errorf("request didn't return a HTTP Status 200 but HTTP Status: %v", res.StatusCode)
-		fmt.Println(err)
-		return result, err
+		return result, fmt.Errorf("%s returned HTTP Status: %v", apiCallURL, res.StatusCode)
 	}
 
 	//read request body

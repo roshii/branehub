@@ -98,7 +98,7 @@ func (k Kraken) requester(call string, query string, params map[string]string) (
 
 	//error handling
 	if res.StatusCode != 200 {
-		return result, fmt.Errorf("request didn't return a HTTP Status 200 but HTTP Status: %v", res.StatusCode)
+		return result, fmt.Errorf("%s returned HTTP Status: %v", apiCallURL, res.StatusCode)
 	}
 
 	//read request body
