@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"gitlab.com/braneproject/branehub/exchanges/bitstamp"
 	"gitlab.com/braneproject/branehub/exchanges/bl3p"
 	"gitlab.com/braneproject/branehub/exchanges/kraken"
@@ -51,11 +53,17 @@ func BranePriceIndex(market string) float32 {
 	krakenChannel := make(chan marketObservables.Ticker)
 	go kraken.ChannelTicker(market, krakenChannel)
 
-	bl3p := bl3p.NewBl3p("", "")
-	bl3pChannel := make(chan marketObservables.Ticker)
-	go bl3p.ChannelTicker(market, bl3pChannel)
+	var bitstampTicker, krakenTicker, bl3pTicker marketObservables.Ticker
 
-	bitstampTicker, krakenTicker, bl3pTicker := <-bitstampChannel, <-krakenChannel, <-bl3pChannel
+	if market == "BTCEUR" || market == "LTCEUR" {
+		bl3pChannel := make(chan marketObservables.Ticker)
+		bl3p := bl3p.NewBl3p("", "")
+		go bl3p.ChannelTicker(market, bl3pChannel)
+		bitstampTicker, krakenTicker, bl3pTicker = <-bitstampChannel, <-krakenChannel, <-bl3pChannel
+	} else {
+		bitstampTicker, krakenTicker = <-bitstampChannel, <-krakenChannel
+		bl3pTicker = marketObservables.Ticker{}
+	}
 
 	bitstampTick := [2]float32{bitstampTicker.Volume, bitstampTicker.Last}
 	krakenTick := [2]float32{krakenTicker.Volume, krakenTicker.Last}
@@ -63,10 +71,10 @@ func BranePriceIndex(market string) float32 {
 
 	average := vwap(bl3pTick, krakenTick, bitstampTick)
 
-	// fmt.Println("@Bitstamp Last: ", bitstampTick[1])
-	// fmt.Println("@Kraken Last: ", krakenTick[1])
-	// fmt.Println("@BL3P Last: ", bl3pTick[1])
-	// fmt.Println("Average: ", average)
+	fmt.Println("@Bitstamp Last: ", bitstampTick[1])
+	fmt.Println("@Kraken Last: ", krakenTick[1])
+	fmt.Println("@BL3P Last: ", bl3pTick[1])
+	fmt.Println("Average: ", average)
 
 	return average
 
